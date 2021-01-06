@@ -1,0 +1,19 @@
+[package]
+name = "pwn_cli"
+version = "0.1.0"
+authors = ["Maximilian Lehrbaum <maximilian@lehrbaum.dev>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[[bin]]
+name = "pwn"
+path = "src/main.rs"
+doc = false
+
+[dependencies]
+
+[dependencies.pwn]
+version = "~0.1.0"
+path = "../pwn"
+default-features = false
