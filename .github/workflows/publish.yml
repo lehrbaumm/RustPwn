@@ -17,16 +17,12 @@ jobs:
               default: true
               override: true
 
-        - name: Release PWN lib
+        - name: Release lib
           uses: katyo/publish-crates@v1
           with:
               path: './pwning'
-              args: --no-verify
-              dry-run: true
 
-        - name: Release PWN CLI
+        - name: Release CLI
           uses: katyo/publish-crates@v1
           with:
               path: './pwning_cli'
-              args: --no-verify
-              dry-run: true

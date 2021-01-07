@@ -9,7 +9,7 @@ repository = "https://github.com/lehrbaumm/rustpwn.git"
 readme = "../README.md"
 
 edition = "2018"
-keywords = ["security", "ctf", "binary exploitation"]
+keywords = ["security", "ctf", "binary"]
 categories = ["network-programming"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
