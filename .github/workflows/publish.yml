@@ -3,7 +3,7 @@ name: Publish
 on: [push]
 
 jobs:
-  build:
+  publish:
     runs-on: ubuntu-latest
 
     steps:
@@ -20,13 +20,13 @@ jobs:
         - name: Release PWN lib
           uses: katyo/publish-crates@v1
           with:
-              path: './pwn'
+              path: './pwning'
               args: --no-verify
               dry-run: true
 
         - name: Release PWN CLI
           uses: katyo/publish-crates@v1
           with:
-              path: './pwn_cli'
+              path: './pwning_cli'
               args: --no-verify
               dry-run: true
