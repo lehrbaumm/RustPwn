@@ -2,7 +2,15 @@
 name = "pwn"
 version = "0.1.0"
 authors = ["Maximilian Lehrbaum <maximilian@lehrbaum.dev>"]
+license = "GPL-3.0-only"
+description = "Rust Library for CTF Binary Challenges"
+homepage = "https://github.com/lehrbaumm/rustpwn"
+repository = "https://github.com/lehrbaumm/rustpwn.git"
+readme = "../README.md"
+
 edition = "2018"
+keywords = ["security", "ctf", "binary exploitation"]
+categories = ["network-programming"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
