@@ -20,12 +20,12 @@ jobs:
         - name: Release lib
           uses: katyo/publish-crates@v1
           with:
-              path: './pwning'
+              path: './pwnd'
               registry-token: ${{ secrets.CARGO_REGISTRY_TOKEN }}
 
 #        - name: Release CLI
 #          uses: katyo/publish-crates@v1
 #          with:
-#              path: './pwning_cli'
+#              path: './pwnd_cli'
 #              registry-token: ${{ secrets.CARGO_REGISTRY_TOKEN }}
 #              dry-run: true

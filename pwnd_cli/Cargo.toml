@@ -1,15 +1,16 @@
 [package]
-name = "pwning_cli"
+name = "pwnd_cli"
 version = "0.1.0"
 authors = ["Maximilian Lehrbaum <maximilian@lehrbaum.dev>"]
 license = "GPL-3.0-only"
-description = "CLI for pwn library"
+description = "CLI for pwnd library"
 repository = "https://github.com/lehrbaumm/rustpwn"
 readme = "../README.md"
 
 edition = "2018"
 keywords = ["security", "ctf"]
 categories = ["command-line-utilities"]
+publish = false
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -20,7 +21,7 @@ doc = true
 
 [dependencies]
 
-[dependencies.pwning]
+[dependencies.pwnd]
 version = "~0.1.0"
-path = "../pwning"
+path = "../pwnd"
 default-features = false

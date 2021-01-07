@@ -1,5 +1,5 @@
 [workspace]
 members = [
-	"pwning",
-	"pwning_cli"
+	"pwnd",
+	"pwnd_cli"
 ]

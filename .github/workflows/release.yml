@@ -18,7 +18,7 @@ jobs:
           override: true
 
       - name: Build
-        run: cargo build --all --release && strip target/release/pwnd && mv target/release/pwnd target/release/pwn_amd64
+        run: cargo build --all --release && strip target/release/pwnd && mv target/release/pwnd target/release/pwnd_amd64
 
       - name: Release
         uses: softprops/action-gh-release@v1

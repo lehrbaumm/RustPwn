@@ -1,5 +1,5 @@
 [package]
-name = "pwning"
+name = "pwnd"
 version = "0.1.0"
 authors = ["Maximilian Lehrbaum <maximilian@lehrbaum.dev>"]
 license = "GPL-3.0-only"
@@ -9,7 +9,7 @@ repository = "https://github.com/lehrbaumm/rustpwn.git"
 readme = "../README.md"
 
 edition = "2018"
-keywords = ["security", "ctf", "binary"]
+keywords = ["security", "ctf", "binary", "exploit_development"]
 categories = ["network-programming"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
