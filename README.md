@@ -47,6 +47,7 @@ I also want to share my library during the development in crates.io, to learn ho
 - [ ] Shellcodes DB
 - [ ] ROP Gadgets
 - [ ] Cryptography
+- [ ] HTTP Post/Get
 
 ## Interesting Libraries and References
 
