@@ -6,7 +6,7 @@ use super::*;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::time;
 
-use crate::tubes::Tube;
+use super::Tube;
 
 #[derive(Debug)]
 pub struct Process {
@@ -33,12 +33,12 @@ impl ProcessBuilder {
         })
     }
 
-    pub fn arg<'a, T: Into<String>>(&'a mut self, arg: T) -> &'a mut ProcessBuilder {
+    pub fn arg<'a, T: Into<String>>(&'a mut self, arg: T) -> &'a mut Self {
         self.args.push(arg.into());
         self
     }
 
-    pub fn set_env<'a>(&'a mut self, env: HashMap<String, String>) -> &'a mut ProcessBuilder {
+    pub fn set_env<'a>(&'a mut self, env: HashMap<String, String>) -> &'a mut Self {
         self.env = Some(env);
         self
     }

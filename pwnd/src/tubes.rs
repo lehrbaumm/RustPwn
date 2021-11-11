@@ -2,6 +2,13 @@ use async_trait::async_trait;
 use std::collections::HashMap;
 
 pub mod process;
+pub mod tcp;
+
+pub enum NetType {
+    TCP,
+    UDP,
+    RAW
+}
 
 #[async_trait]
 pub trait Tube {
@@ -26,4 +33,16 @@ pub fn create_process(file_name: &str, args: Option<Vec<&str>>, env: Option<Hash
         process_builder = process_builder.set_env(environment);
     }
     Ok(Box::new(process_builder.build()?))
+}
+
+pub async fn remote(hostname: &str, port: u16, kind: NetType) -> Result<Box<Tube>, Box<dyn std::error::Error>> {
+    match kind {
+        TCP => {
+            let mut connection = tcp::TCP::new(hostname.to_string(), port);
+            connection.connect().await.unwrap();
+            Ok(Box::new(connection))
+        },
+        UDP => todo!(),
+        RAW => todo!()
+    }
 }
