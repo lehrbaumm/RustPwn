@@ -110,7 +110,11 @@ impl Tube for Process {
     }
 
     async fn recvline(&mut self, keep_end: bool, timeout: Option<u64>) -> tokio::io::Result<Vec<u8>> {
-        self.recvuntil(b"\n", keep_end, timeout).await
+        if cfg!(windows) {
+            self.recvuntil(b"\r\n", keep_end, timeout).await
+        } else {
+            self.recvuntil(b"\n", keep_end, timeout).await
+        }
     }
 
     async fn recvuntil<'a>(&mut self, pattern: &'a [u8], keep_end: bool, timeout: Option<u64>) -> tokio::io::Result<Vec<u8>> {
