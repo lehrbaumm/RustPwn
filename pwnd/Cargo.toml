@@ -1,6 +1,6 @@
 [package]
 name = "pwnd"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Maximilian Lehrbaum <maximilian@lehrbaum.dev>"]
 license = "GPL-3.0-only"
 description = "Rust Library for CTF Binary Challenges"
@@ -16,3 +16,7 @@ categories = ["network-programming"]
 
 
 [dependencies]
+async-trait = "0.1.51"
+bytes = "1.1.0"
+tokio = { version = "1.13.0", features = ["io-util", "rt-multi-thread", "process", "net", "macros", "time"] }
+tracing = "0.1.29"
