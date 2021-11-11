@@ -7,7 +7,7 @@ mod tests {
         use crate::tubes::process::ProcessBuilder;
         use crate::tubes::Tube;
 
-        let p_result = ProcessBuilder::new("ls");
+        let p_result = ProcessBuilder::new("cat");
 
         assert!(p_result.is_ok(), "ProcessBuilder couldn't be created");
 
