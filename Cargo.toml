@@ -3,3 +3,6 @@ members = [
 	"pwnd",
 	"pwnd_cli"
 ]
+exclude = [
+    "pwnd_local"
+]

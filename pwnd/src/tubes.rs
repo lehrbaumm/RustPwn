@@ -21,7 +21,7 @@ pub trait Tube {
     async fn close(&mut self) -> tokio::io::Result<()>;
 }
 
-pub fn create_process(file_name: &str, args: Option<Vec<&str>>, env: Option<HashMap<String, String>>) -> tokio::io::Result<Box<Tube>> {
+pub fn create_process(file_name: &str, args: Option<Vec<&str>>, env: Option<HashMap<String, String>>) -> tokio::io::Result<Box<dyn Tube>> {
     use process::ProcessBuilder;
     let mut process_builder = &mut ProcessBuilder::new(file_name)?;
     if let Some(arguments) = args {
@@ -35,14 +35,14 @@ pub fn create_process(file_name: &str, args: Option<Vec<&str>>, env: Option<Hash
     Ok(Box::new(process_builder.build()?))
 }
 
-pub async fn remote(hostname: &str, port: u16, kind: NetType) -> Result<Box<Tube>, Box<dyn std::error::Error>> {
+pub async fn remote(hostname: &str, port: u16, kind: NetType) -> Result<Box<dyn Tube>, Box<dyn std::error::Error>> {
     match kind {
-        TCP => {
+        NetType::TCP => {
             let mut connection = tcp::TCP::new(hostname.to_string(), port);
             connection.connect().await.unwrap();
             Ok(Box::new(connection))
         },
-        UDP => todo!(),
-        RAW => todo!()
+        NetType::UDP => todo!(),
+        NetType::RAW => todo!()
     }
 }
