@@ -1,7 +1,6 @@
 use tokio::process::{Command, Child, ChildStdout, ChildStdin, ChildStderr};
 use std::process::{Stdio, ExitStatus};
 use std::convert::Into;
-use std::collections::HashMap;
 use std::time::Duration;
 use super::*;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};

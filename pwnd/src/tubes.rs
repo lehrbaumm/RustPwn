@@ -1,4 +1,5 @@
 use async_trait::async_trait;
+use std::collections::HashMap;
 
 pub mod process;
 
@@ -13,4 +14,16 @@ pub trait Tube {
     async fn close(&mut self) -> tokio::io::Result<()>;
 }
 
-//pub async fn process()
+pub fn create_process(file_name: &str, args: Option<Vec<&str>>, env: Option<HashMap<String, String>>) -> tokio::io::Result<Box<Tube>> {
+    use process::ProcessBuilder;
+    let mut process_builder = &mut ProcessBuilder::new(file_name)?;
+    if let Some(arguments) = args {
+        for arg in arguments {
+            process_builder = process_builder.arg(arg);
+        }
+    }
+    if let Some(environment) = env {
+        process_builder = process_builder.set_env(environment);
+    }
+    Ok(Box::new(process_builder.build()?))
+}
