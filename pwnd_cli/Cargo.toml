@@ -21,7 +21,10 @@ path = "src/main.rs"
 doc = true
 
 [dependencies]
+color-eyre = "0.5.11"
 tokio = { version = "1.13.0", features = ["rt-multi-thread", "macros"] }
+tracing = "0.1.29"
+tracing-subscriber = { version = "0.3.1", features = ["std", "env-filter"] }
 
 [dependencies.pwnd]
 version = "~0.1.0"

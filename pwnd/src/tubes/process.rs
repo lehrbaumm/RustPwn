@@ -25,7 +25,7 @@ pub struct ProcessBuilder {
 }
 
 impl ProcessBuilder {
-    pub fn new<T: Into<String>>(file_name: T) -> tokio::io::Result<Self> {
+    pub fn new<T: Into<String>>(file_name: T) -> eyre::Result<Self> {
         Ok(Self {
             file_name: file_name.into(),
             args: Vec::new(),
@@ -43,7 +43,7 @@ impl ProcessBuilder {
         self
     }
 
-    pub fn build(&mut self) -> tokio::io::Result<Process> {
+    pub fn build(&mut self) -> eyre::Result<Process> {
         let mut bare_command = Command::new(&self.file_name);
         let mut command: &mut Command = bare_command.stdin(Stdio::piped()).stdout(Stdio::piped());//.stderr(Stdio::piped());
         match &self.env {
@@ -95,28 +95,24 @@ impl Process {
 impl Tube for Process {
     fn print_status(&self) {
         match self.process {
-            Some(_) => println!("Process running."),
-            None => println!("Process exited with exit_code {}", self.exit_code.unwrap())
+            Some(_) => info!("Process running."),
+            None => info!("Process exited with exit_code {}", self.exit_code.unwrap())
         };
     }
 
-    async fn close(&mut self) -> tokio::io::Result<()> {
+    async fn close(&mut self) -> eyre::Result<()> {
         self.check_process().await;
         match self.process.as_mut() {
-            None => Err(std::io::Error::new(std::io::ErrorKind::Other, "No running process.")),
-            Some(child_process) => child_process.kill().await
+            None => Err(Error::new(std::io::Error::new(std::io::ErrorKind::Other, "No running process."))),
+            Some(child_process) => child_process.kill().await.wrap_err("Failed to kill running process.")
         }
     }
 
-    async fn recvline(&mut self, keep_end: bool, timeout: Option<u64>) -> tokio::io::Result<Vec<u8>> {
-        if cfg!(windows) {
-            self.recvuntil(b"\r\n", keep_end, timeout).await
-        } else {
-            self.recvuntil(b"\n", keep_end, timeout).await
-        }
+    async fn recvline(&mut self, keep_end: bool, timeout: Option<u64>) -> eyre::Result<Vec<u8>> {
+        self.recvuntil(b"\n", keep_end, timeout).await
     }
 
-    async fn recvuntil<'a>(&mut self, pattern: &'a [u8], keep_end: bool, timeout: Option<u64>) -> tokio::io::Result<Vec<u8>> {
+    async fn recvuntil<'a>(&mut self, pattern: &'a [u8], keep_end: bool, timeout: Option<u64>) -> eyre::Result<Vec<u8>> {
         self.check_process().await;
         let real_timeout = match timeout {
             None => 300,
@@ -132,7 +128,8 @@ impl Tube for Process {
             //let _ = stdout.read(&mut buffer[..]).await?;
 
             if bytes_read == 0 && self.process.is_none() {
-                return Err(std::io::Error::new(std::io::ErrorKind::Other, "Process exited!"));
+                error!("Process stopped unexpectedly.");
+                return Err(Error::new(std::io::Error::new(std::io::ErrorKind::Other, "Process exited!")));
             }
             result.push(buffer[0]);
 
@@ -154,17 +151,20 @@ impl Tube for Process {
             for _ in 0..pattern.len() {
                 result.pop();
             }
+            if result.contains(&b'\r') {
+                result.pop();
+            }
         }
         Ok(result)
     }
 
-    async fn sendline<'a>(&mut self, input: &'a [u8], timeout: Option<u64>) -> tokio::io::Result<usize> {
+    async fn sendline<'a>(&mut self, input: &'a [u8], timeout: Option<u64>) -> eyre::Result<usize> {
         let mut new_input: Vec<u8> = Vec::from(input);
         new_input.push(b'\n');
         self.send(&new_input, timeout).await
     }
 
-    async fn send<'a>(&mut self, input: &'a [u8], timeout: Option<u64>) -> tokio::io::Result<usize> {
+    async fn send<'a>(&mut self, input: &'a [u8], timeout: Option<u64>) -> eyre::Result<usize> {
         self.check_process().await;
         let real_timeout = match timeout {
             None => 300,
@@ -176,13 +176,13 @@ impl Tube for Process {
         let bytes_written = time::timeout(Duration::from_millis(real_timeout), write_function).await??;
 
         if bytes_written != input.len() {
-            return Err(std::io::Error::new(std::io::ErrorKind::Other, "Not enough written!"));
+            return Err(Error::new(std::io::Error::new(std::io::ErrorKind::Other, "Not enough written!")));
         }
 
         Ok(bytes_written)
     }
 
-    async fn interactive(&mut self) -> tokio::io::Result<()> {
+    async fn interactive(&mut self) -> eyre::Result<()> {
         todo!()
     }
 }

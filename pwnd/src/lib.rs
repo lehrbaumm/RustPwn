@@ -1,4 +1,6 @@
 pub mod tubes;
+pub mod util;
+pub mod binary;
 
 #[cfg(test)]
 mod tests {
@@ -17,6 +19,7 @@ mod tests {
         assert!(p.close().await.is_ok(), "Process didn't exit!");
     }
 
+    
     #[tokio::test]
     async fn test_process_readline() {
         use crate::tubes::process::ProcessBuilder;
@@ -37,4 +40,5 @@ mod tests {
 
         assert_eq!(line, Bytes::from("Test"));
     }
+    
 }

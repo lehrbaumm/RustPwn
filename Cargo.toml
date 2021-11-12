@@ -1,7 +1,8 @@
 [workspace]
 members = [
 	"pwnd",
-	"pwnd_cli"
+	"pwnd_cli",
+    #"pwnd_local"
 ]
 exclude = [
     "pwnd_local"

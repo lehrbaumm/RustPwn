@@ -18,5 +18,8 @@ categories = ["network-programming"]
 [dependencies]
 async-trait = "0.1.51"
 bytes = "1.1.0"
+eyre = "0.6.5"
+goblin = "0.4.3"
+rhexdump = "0.1.1"
 tokio = { version = "1.13.0", features = ["io-util", "rt-multi-thread", "process", "net", "macros", "time"] }
 tracing = "0.1.29"

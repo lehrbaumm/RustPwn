@@ -1,12 +1,9 @@
 use std::convert::Into;
 use std::time::Duration;
-use std::error::Error;
 use super::*;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpStream;
 use tokio::time;
-
-use super::Tube;
 
 #[derive(Debug)]
 pub struct TCP {
@@ -24,7 +21,7 @@ impl TCP {
         }
     }
 
-    pub async fn connect<'a>(&'a mut self) -> Result<(), Box<dyn Error>> {
+    pub async fn connect<'a>(&'a mut self) -> eyre::Result<()> {
         self.stream = Some(TcpStream::connect(format!("{}:{}", self.hostname, self.port)).await?);
         Ok(())
     }
@@ -32,10 +29,10 @@ impl TCP {
 
 #[async_trait]
 impl Tube for TCP {
-    async fn close(&mut self) -> tokio::io::Result<()> {
+    async fn close(&mut self) -> eyre::Result<()> {
         match self.stream.as_mut() {
             None => Ok(()),
-            Some(connection) => connection.shutdown().await
+            Some(connection) => connection.shutdown().await.wrap_err("Failed to close connection!")
         }
     }
 
@@ -43,17 +40,17 @@ impl Tube for TCP {
         todo!()
     }
 
-    async fn recvline(&mut self, keep_end: bool, timeout: Option<u64>) -> tokio::io::Result<Vec<u8>> {
+    async fn recvline(&mut self, keep_end: bool, timeout: Option<u64>) -> eyre::Result<Vec<u8>> {
         self.recvuntil(b"\n", keep_end, timeout).await
     }
 
-    async fn recvuntil<'a>(&mut self, pattern: &'a [u8], keep_end: bool, timeout: Option<u64>) -> tokio::io::Result<Vec<u8>> {
+    async fn recvuntil<'a>(&mut self, pattern: &'a [u8], keep_end: bool, timeout: Option<u64>) -> eyre::Result<Vec<u8>> {
         let real_timeout = match timeout {
             None => 10,
             Some(n) => n
         };
         match self.stream.as_mut() {
-            None => Err(std::io::Error::new(std::io::ErrorKind::Other, "No connection.")),
+            None => Err(Error::new(std::io::Error::new(std::io::ErrorKind::Other, "No connection."))),
             Some(connection) => {
                 let mut result: Vec<u8> = Vec::with_capacity(1024);
                 loop {
@@ -64,7 +61,9 @@ impl Tube for TCP {
                     //let _ = stdout.read(&mut buffer[..]).await?;
 
                     if bytes_read == 0 {
-                        return Err(std::io::Error::new(std::io::ErrorKind::Other, "Connection lost!"));
+                        info!("Received {} bytes of data.", result.len());
+                        info!("{}", hexdump(&result));
+                        return Err(Error::new(std::io::Error::new(std::io::ErrorKind::Other, "Connection lost!")));
                     }
                     result.push(buffer[0]);
 
@@ -82,6 +81,8 @@ impl Tube for TCP {
                         }
                     }
                 }
+                debug!("Received {} bytes of data.", result.len());
+                debug!("{}", hexdump(&result));
                 if !keep_end {
                     for _ in 0..pattern.len() {
                         result.pop();
@@ -92,25 +93,27 @@ impl Tube for TCP {
         }
     }
 
-    async fn sendline<'a>(&mut self, input: &'a [u8], timeout: Option<u64>) -> tokio::io::Result<usize> {
+    async fn sendline<'a>(&mut self, input: &'a [u8], timeout: Option<u64>) -> eyre::Result<usize> {
         let mut new_input: Vec<u8> = Vec::from(input);
         new_input.push(b'\n');
         self.send(&new_input, timeout).await
     }
 
-    async fn send<'a >(&mut self, input: &'a [u8], timeout: Option<u64>) -> tokio::io::Result<usize> {
+    async fn send<'a >(&mut self, input: &'a [u8], timeout: Option<u64>) -> eyre::Result<usize> {
         let real_timeout = match timeout {
             None => 10,
             Some(n) => n
         };
+        debug!("Sending {} bytes of data.", input.len());
+        debug!("{}", hexdump(&input));
         match self.stream.as_mut() {
-            None => Err(std::io::Error::new(std::io::ErrorKind::Other, "No connection.")),
+            None => Err(Error::new(std::io::Error::new(std::io::ErrorKind::Other, "No connection."))),
             Some(connection) => {
                 let write_function = connection.write(input);
                 let bytes_written = time::timeout(Duration::from_secs(real_timeout), write_function).await??;
 
                 if bytes_written != input.len() {
-                    return Err(std::io::Error::new(std::io::ErrorKind::Other, "Not enough written!"));
+                    return Err(Error::new(std::io::Error::new(std::io::ErrorKind::Other, "Not enough written!")));
                 }
 
                 Ok(bytes_written)
@@ -118,7 +121,7 @@ impl Tube for TCP {
         }
     }
 
-    async fn interactive(&mut self) -> tokio::io::Result<()> {
+    async fn interactive(&mut self) -> eyre::Result<()> {
         todo!()
     }
 }
